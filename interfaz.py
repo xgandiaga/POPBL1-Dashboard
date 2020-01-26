@@ -24,8 +24,7 @@ import hdbscan
 import plotly.express as px
 import threading
 
-data = pd.read_csv('work_data_prepro.csv', nrows=1000)
-data2 = pd.read_csv('work_data_prepro_all.csv', nrows=1000)
+data = pd.read_csv('work_data_prepro_all.csv')
 
 event = threading.Event()
 temp = data.copy()
@@ -51,14 +50,14 @@ app.layout = html.Div(children=[
                         dcc.Dropdown(
                             id='variable1',
                             clearable=False,
-                            value='network.bytes',
+                            value='event.duration',
                             options=[
                                 {'label': 'Event duration',
                                     'value': 'event.duration'},
-                                {'label': 'Destination port',
-                                 'value': 'destination.port'},
                                 {'label': 'Network bytes',
                                     'value': 'network.bytes'},
+                                {'label': 'Network packets',
+                                    'value': 'network.packets'},
                             ],
                         ),
                     ], className="option"),
@@ -68,14 +67,14 @@ app.layout = html.Div(children=[
                         dcc.Dropdown(
                             id='variable2',
                             clearable=False,
-                            value='event.duration',
+                            value='network.bytes',
                             options=[
                                 {'label': 'Event duration',
                                     'value': 'event.duration'},
-                                {'label': 'Destination port',
-                                 'value': 'destination.port'},
                                 {'label': 'Network bytes',
                                     'value': 'network.bytes'},
+                                {'label': 'Network packets',
+                                    'value': 'network.packets'},
                             ],
                         ),
                     ], className="option"),
@@ -101,7 +100,7 @@ app.layout = html.Div(children=[
                             marks={i: '{}'.format(10 ** i)
                                    for i in range(len(data.index))},
                             max=len(data.index),
-                            value=100,
+                            value=1000,
                             step=1,
                             updatemode='drag'
                         ),
@@ -117,7 +116,7 @@ app.layout = html.Div(children=[
                             id='min_samples',
                             placeholder='Enter a value...',
                             type='number',
-                            value=10,
+                            value=50,
                             min=1,
                             max=len(data.index),
                             step=1,
@@ -130,7 +129,7 @@ app.layout = html.Div(children=[
                             id='epsilon',
                             placeholder='Enter a value...',
                             type='number',
-                            value=0.5,
+                            value=0.3,
                             debounce=True),
                     ], id='epsilon_div', className="option"),
 
@@ -140,7 +139,7 @@ app.layout = html.Div(children=[
                             id='min_cluster_size',
                             placeholder='Enter a value...',
                             type='number',
-                            value=5,
+                            value=10,
                             min=2,
                             step=1,
                             debounce=True),
@@ -244,10 +243,11 @@ app.layout = html.Div(children=[
     Output('min_samples', component_property='value'),
     Output('epsilon', component_property='value'),
     Output('min_cluster_size', component_property='value'),
-    Output('xi', component_property='value')],
+    Output('xi', component_property='value'),
+    Output('num_samples', component_property='value')],
     [Input('reset', 'n_clicks')])
 def reset(n_clicks):
-    return 'network.bytes', 'event.duration', 'DBSCAN', 100, 10, 0.5, 5, 0.05
+    return 'network.bytes', 'event.duration', 'DBSCAN', 100, 10, 0.5, 5, 0.05, 1000
 
 
 @app.callback(
@@ -424,4 +424,4 @@ def callback_variables(variable1, variable2, algorythm, num_samples, min_samples
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(host="0.0.0.0", debug=True)
