@@ -243,8 +243,7 @@ app.layout = html.Div(children=[
     Output('min_samples', component_property='value'),
     Output('epsilon', component_property='value'),
     Output('min_cluster_size', component_property='value'),
-    Output('xi', component_property='value'),
-    Output('num_samples', component_property='value')],
+    Output('xi', component_property='value')],
     [Input('reset', 'n_clicks')])
 def reset(n_clicks):
     return 'network.bytes', 'event.duration', 'DBSCAN', 100, 10, 0.5, 5, 0.05, 1000
